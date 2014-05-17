@@ -7,7 +7,7 @@ This is primarily a design pattern with a few helper functions. It can
 be seen as a style of dependency injection using immutable data
 structures.
 
-
+See the [video from Clojure/West 2014](https://www.youtube.com/watch?v=13cmHf_kt-Q) (YouTube, 40 minutes)
 
 
 ## Releases and Dependency Information

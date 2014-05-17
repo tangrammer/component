@@ -145,7 +145,7 @@
       (is (stopped? component)))))
 
 (deftest dependencies-satisfied
-  (let [system (component/start (component/start (system-1)))]
+  (let [system (component/start (system-1))]
     (are [keys] (started? (get-in system keys))
          [:b :a]
          [:c :a]

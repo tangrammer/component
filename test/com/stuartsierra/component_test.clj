@@ -102,6 +102,18 @@
 (defn component-e []
   (map->ComponentE {:state (rand-int Integer/MAX_VALUE)}))
 
+(defrecord StopReturnsEmptyComponent [state]
+  component/Lifecycle
+  (start [this]
+    (log 'NilStopComponent.start this)
+    (assoc this ::started? true))
+  (stop [this]
+    (log 'NilStopComponent.stop this)
+    {}))
+
+(defn stop-returns-empty-component []
+  (map->StopReturnsEmptyComponent {:state (rand-int Integer/MAX_VALUE)}))
+
 (defrecord System1 [d a e c b]  ; deliberately scrambled order
   component/Lifecycle
   (start [this]
@@ -263,3 +275,18 @@
   (let [c (->ComponentWithoutLifecycle nil)]
     (is (= c (component/start c)))
     (is (= c (component/stop c)))))
+
+(defn system-3 []
+  (assoc (system-1)
+    :a (component/using (component-a)
+         [:stop-empty])
+    :stop-empty (stop-returns-empty-component)))
+
+(deftest t-component-stop-returns-empty-map
+  (let [system (component/stop (component/start (system-3)))]
+    (are [keys] (= {} (get-in system keys))
+         [:a :stop-empty]
+         [:b :a :stop-empty]
+         [:c :a :stop-empty]
+         [:c :b :a :stop-empty]
+         [:d :my-c :b :a :stop-empty])))

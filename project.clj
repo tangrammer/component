@@ -6,7 +6,8 @@
   :min-lein-version "2.1.3"  ; added :global-vars
   :dependencies [[com.stuartsierra/dependency "0.1.1"]]
   :global-vars {*warn-on-reflection* true}
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.6.0"]
                                   [org.clojure/tools.namespace "0.2.4"]]
                    :source-paths ["dev"]}
-             :clj1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}})
+             :clj1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
+             :clj1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}})

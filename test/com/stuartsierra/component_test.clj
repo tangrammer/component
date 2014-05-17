@@ -152,6 +152,20 @@
          [:c :b]
          [:d :my-c])))
 
+(deftest dependencies-stopped
+  "Ensure that 'stopped' dependencies propagate to their dependents in
+  stop-system."
+  (let [system (component/stop (component/start (system-1)))]
+    (are [keys] (stopped? (get-in system keys))
+         [:b :a]
+         [:c :a]
+         [:c :b]
+         [:c :b :a]
+         [:d :b]
+         [:d :my-c]
+         [:d :my-c :b]
+         [:d :my-c :b :a])))
+
 (defrecord ErrorStartComponentC [state error a b]
   component/Lifecycle
   (start [this]

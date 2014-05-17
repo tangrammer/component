@@ -128,16 +128,25 @@
             (sort (dep/topo-comparator graph) component-keys))))
 
 (defn update-system-reverse
-  "Like update-system but operates in reverse dependency order."
+  "Invokes (apply f component args) on each of the components at
+  component-keys in the system, in reverse dependency order, then
+  assoc's updated dependencies into all components."
   [system component-keys f & args]
-  (let [graph (dependency-graph system component-keys)]
+  (let [graph (dependency-graph system component-keys)
+        keys (sort (dep/topo-comparator graph) component-keys)
+        s (reduce (fn [system key]
+                    (assoc system key
+                           (-> (get-component system key)
+                               (try-action system key f args))))
+                  system
+                  (reverse keys))]
+    ;; Re-assoc dependencies in normal order to get updated versions
     (reduce (fn [system key]
               (assoc system key
                      (-> (get-component system key)
-                         (assoc-dependencies system)
-                         (try-action system key f args))))
-            system
-            (reverse (sort (dep/topo-comparator graph) component-keys)))))
+                         (assoc-dependencies system))))
+            s
+            keys)))
 
 (defn start-system
   "Recursively starts components in the system, in dependency order,

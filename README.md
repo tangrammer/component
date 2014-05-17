@@ -624,6 +624,9 @@ doing just the dependency injection part of 'component' without
 ## Change Log
 
 * Version 0.2.2-SNAPSHOT (current Git master branch)
+  * `update-system-reverse` now propagates dependencies in a manner
+    similar to `update-system`; before it did not propagate
+    dependencies at all, see #9
 * Version [0.2.1] released on December 17, 2013
   * Add generic `system-map`
   * More descriptive messages on exceptions

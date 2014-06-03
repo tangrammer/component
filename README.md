@@ -203,8 +203,9 @@ To create a component, define a Clojure record that implements the
     ;; component and release any external resources it has
     ;; acquired.
     (.close connection)
-    ;; Return the component, optionally modified.
-    component))
+    ;; Return the component, optionally modified. Remember that if you
+    ;; dissoc one of a record's base fields, you get a plain map.
+    (assoc component :connection nil)))
 ```
 
 Optionally, provide a constructor function that takes arguments for

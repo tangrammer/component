@@ -344,6 +344,11 @@ as if by:
     (start))
 ```
 
+Stop a system by calling the `stop` method on it. This will stop each
+component, in *reverse* dependency order, and then re-assoc the
+dependencies of each component. **Note:** `stop` is not the inverse of
+`start`; component dependencies will still be associated.
+
 It doesn't matter *when* you associate dependency metadata on a
 component, as long as it happens before you call `start`. If you know
 the names of all the components in your system in advance, you could

@@ -178,6 +178,31 @@
          [:d :my-c :b]
          [:d :my-c :b :a])))
 
+(deftest partial-stop-1
+  "Ensure that 'stopped' dependencies propagate to their dependents in
+  stop-system when only one component is stopped."
+  (let [system (component/stop-system (component/start (system-1))
+                                      [:a])]
+    (are [keys] (stopped? (get-in system keys))
+         [:a]
+         [:b :a]
+         [:c :a]
+         [:c :b :a]
+         [:d :my-c :b :a])))
+
+(deftest partial-stop-2
+  "Ensure that 'stopped' dependencies propagate to their dependents in
+  stop-system when only two components are stopped."
+  (let [system (component/stop-system (component/start (system-1))
+                                      [:b :c])]
+    (are [keys] (stopped? (get-in system keys))
+         [:b]
+         [:c]
+         [:c :b]
+         [:d :b]
+         [:d :my-c]
+         [:d :my-c :b])))
+
 (defrecord ErrorStartComponentC [state error a b]
   component/Lifecycle
   (start [this]

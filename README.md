@@ -44,7 +44,7 @@ See the [video from Clojure/West 2014](https://www.youtube.com/watch?v=13cmHf_kt
 ## Dependencies and Compatibility
 
 I have successfully tested 'Component' with Clojure versions
-1.4.0 and 1.5.1.
+1.4.0, 1.5.1, and 1.6.0.
 
 'Component' uses my [dependency] library.
 

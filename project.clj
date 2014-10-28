@@ -4,7 +4,9 @@
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
   :min-lein-version "2.1.3"  ; added :global-vars
-  :dependencies [[com.stuartsierra/dependency "0.1.1"]]
+  :dependencies [[com.stuartsierra/dependency "0.1.1"]
+                 [tangrammer/wrapper "0.1.0-SNAPSHOT"]
+                 ]
   :global-vars {*warn-on-reflection* true}
   :aliases {"test-all"
             ["with-profile" "clj1.4:clj1.5:clj1.6:clj1.7" "test"]}

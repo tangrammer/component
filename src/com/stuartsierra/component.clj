@@ -1,5 +1,8 @@
 (ns com.stuartsierra.component
-  (:require [com.stuartsierra.dependency :as dep]))
+  (:require [com.stuartsierra.dependency :as dep]
+            [wrapper.aop :refer :all])
+  (:import
+           [wrapper.aop SimpleWrapper]))
 
 (defprotocol Lifecycle
   (start [component]
@@ -55,13 +58,47 @@
   the keys are the same in both the component and its enclosing
   system, they may be specified as a vector of keys."
   [component who]
-  (vary-meta
-   component assoc-in [::wrap] who
-   ))
+  (using (vary-meta
+    component assoc-in [::wrap] who
+    ) [who])
+
+  )
+(defprotocol Listen
+  (listen [_]))
+
+(defn intercept[i]
+(println "intercepting...")
+  (let [
+        methods (get-methods i)
+        ]
+    (map #(add-extend SimpleWrapper  (interface->protocol %) methods) (get-supers i))
+
+    #_(add-extend SimpleWrapper Listen methods
+
+            (fn [& more]
+              (println "a is" (first more))
+              (println "b is" (second more))
+              (println "...function-def..." (last more)) ))
+
+    #_(add-extend SimpleWrapper Lifecycle methods
+
+            (fn [& more]
+              (println "a is" (first more))
+              (println "b is" (second more))
+              (println "...function-def..." (last more)) ))
+    (SimpleWrapper. i)
+    )
+
+  )
 
 (defn assoc-component [system key c]
-  (assoc system key c)
-  )
+  (if (::wrap (meta c))
+    (do
+      (println "has to be wrapped!!" key "by" (keys system) (::wrap (meta c)) (get system (::wrap (meta c))))
+      (let [w (::wrap (meta c))]
+        (assoc  system key (assoc (intercept c) :w (get system (::wrap (meta c)))))))
+    (assoc system key c)
+    ))
 
 (defn system-using
   "Associates dependency metadata with multiple components in the
@@ -77,7 +114,7 @@
                          {:reason ::missing-component
                           :system-key key
                           :system system})))
-       (assoc-component system key (using component dependencies))))
+       (assoc system key (using component dependencies))))
    system
    dependency-map))
 
@@ -136,9 +173,11 @@
   component-keys in the system, in dependency order. Before invoking
   f, assoc's updated dependencies of the component."
   [system component-keys f & args]
+  (println "updating the system!!")
   (let [graph (dependency-graph system component-keys)]
     (reduce (fn [system key]
-              (assoc system key
+              (println "key" key )
+              (assoc-component system key
                      (-> (get-component system key)
                          (assoc-dependencies system)
                          (try-action system key f args))))
@@ -254,4 +293,3 @@
 ;; COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 ;; IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-(meta (wrapped (SystemMap.) :lolo))

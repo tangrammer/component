@@ -46,6 +46,23 @@
                        :component component
                        :dependencies dependencies})))))
 
+(defn wrapped
+  "Associates metadata with component describing the other components
+  on which it depends. Component dependencies are specified as a map.
+  Keys in the map correspond to keys in this component which must be
+  provided by its containing system. Values in the map are the keys in
+  the system at which those components may be found. Alternatively, if
+  the keys are the same in both the component and its enclosing
+  system, they may be specified as a vector of keys."
+  [component who]
+  (vary-meta
+   component assoc-in [::wrap] who
+   ))
+
+(defn assoc-component [system key c]
+  (assoc system key c)
+  )
+
 (defn system-using
   "Associates dependency metadata with multiple components in the
   system. dependency-map is a map of keys in the system to maps or
@@ -60,7 +77,7 @@
                          {:reason ::missing-component
                           :system-key key
                           :system system})))
-       (assoc system key (using component dependencies))))
+       (assoc-component system key (using component dependencies))))
    system
    dependency-map))
 
@@ -165,7 +182,8 @@
   (start [system]
     (start-system system))
   (stop [system]
-    (stop-system system)))
+    (stop-system system))
+  )
 
 (defmethod clojure.core/print-method SystemMap
   [system ^java.io.Writer writer]
@@ -236,3 +254,4 @@
 ;; COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 ;; IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 ;; CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+(meta (wrapped (SystemMap.) :lolo))

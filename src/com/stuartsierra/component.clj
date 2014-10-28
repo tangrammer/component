@@ -59,20 +59,18 @@
   the keys are the same in both the component and its enclosing
   system, they may be specified as a vector of keys."
   [component who]
-  (using (vary-meta
-    component assoc-in [::wrap] who
-    ) [who])
+  (using (vary-meta component assoc-in [::wrap] who) [who])
 
   )
 (defprotocol Listen
   (listen [_]))
 
-(defn intercept[i]
-;;(println "intercepting..." (get-supers i))
+(defn intercept[i aop-routes]
+;(clojure.pprint/pprint aop-routes)
   (let [methods (get-methods i)]
     (doseq [t (get-supers i)]
-      ;;(println "*********** " t)
-      (add-extend SimpleWrapper  (interface->protocol t) methods))
+      (println "*********** " t)
+      (add-extend aop-routes SimpleWrapper  (interface->protocol t) methods))
 
     #_(add-extend SimpleWrapper Listen methods
 
@@ -94,7 +92,7 @@
     (do
 ;      (println "has to be wrapped!!" key "by" (keys system) (::wrap (meta c)) (get system (::wrap (meta c))))
       (let [w (::wrap (meta c))]
-        (assoc  system key (assoc (intercept c) :w (get system (::wrap (meta c)))))))
+        (assoc  system key (assoc (intercept c (-> system meta :aop-routes)) :w (get system (::wrap (meta c)))))))
     (assoc system key c)
     ))
 

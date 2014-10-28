@@ -1,7 +1,8 @@
 (ns com.stuartsierra.component-test
   (:require [clojure.test :refer (deftest is are)]
             [clojure.set :refer (map-invert)]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [bidi.bidi :refer :all]))
 
 (def ^:dynamic *log* nil)
 
@@ -53,7 +54,7 @@
     (assoc this ::started? false))
   component/Listen
   (listen [this]
-    "listen-impl"))
+    " cooo listen-impl"))
 
 (defn component-b []
   (component/using
@@ -124,22 +125,31 @@
   (map->ComponentE {:state (rand-int Integer/MAX_VALUE)}))
 
 
-
-(def s (component/start (apply component/system-map
-                               :a (component-a)
-                               :b (component/wrapped (component-b) :e)
-                               ;;:b  (component-b)
-                               :c (component-c)
-                               :d (component/using (component-d)
-                                                   {:b :b
-                                                    :my-c :c})
-                               :e (component/using (component-e) [:f])
-                               :f (component-e)
-                               )))
+(def routes-welcome ["" {"com.stuartsierra.component.Listen"
+                         {
+                          "/listen/this" (fn [& more] (println "logging Listen" more))}
+                         "com.stuartsierra.component.Lifecycle"
+                         {"" (fn [& more]
+                               (println "you're in component/lifecycle :-)" (:function-name (last more)) (first more)))
+                          "/start/this" (fn [& more]
+                               (println "you're in component/lifecycle :-)" (:function-name (last more))))}}])
 
 
+(match-route routes-welcome "com.stuartsierra.component.Lifecycle/start/this")
+(def s (component/start (vary-meta (apply component/system-map
+                                    :a (component-a)
+                                    :b (component/wrapped (component-b) :e )
+                                    ;;:b  (component-b)
+                                    :c (component-c)
+                                    :d (component/using (component-d)
+                                                        {:b :b
+                                                         :my-c :c})
+                                    :e (component/using (component-e) [:f])
+                                    :f (component-e)
+                                    ) assoc-in [:aop-routes ] routes-welcome)))
 
-(get s :e)
+
+
 #_(comment (defmacro with-log [& body]
    `(binding [*log* []]
       ~@body

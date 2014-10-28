@@ -18,6 +18,7 @@
 (extend-protocol Lifecycle
   java.lang.Object
   (start [this]
+;;    (println "starting plain Object")
     this)
   (stop [this]
     this))
@@ -67,11 +68,11 @@
   (listen [_]))
 
 (defn intercept[i]
-(println "intercepting...")
-  (let [
-        methods (get-methods i)
-        ]
-    (map #(add-extend SimpleWrapper  (interface->protocol %) methods) (get-supers i))
+;;(println "intercepting..." (get-supers i))
+  (let [methods (get-methods i)]
+    (doseq [t (get-supers i)]
+      ;;(println "*********** " t)
+      (add-extend SimpleWrapper  (interface->protocol t) methods))
 
     #_(add-extend SimpleWrapper Listen methods
 
@@ -86,15 +87,12 @@
               (println "a is" (first more))
               (println "b is" (second more))
               (println "...function-def..." (last more)) ))
-    (SimpleWrapper. i)
-    )
-
-  )
+    (SimpleWrapper. i)))
 
 (defn assoc-component [system key c]
   (if (::wrap (meta c))
     (do
-      (println "has to be wrapped!!" key "by" (keys system) (::wrap (meta c)) (get system (::wrap (meta c))))
+;      (println "has to be wrapped!!" key "by" (keys system) (::wrap (meta c)) (get system (::wrap (meta c))))
       (let [w (::wrap (meta c))]
         (assoc  system key (assoc (intercept c) :w (get system (::wrap (meta c)))))))
     (assoc system key c)
@@ -149,7 +147,9 @@
              (dependencies component)))
 
 (defn- try-action [component system key f args]
-  (try (apply f component args)
+  (try (do
+;         (println "try " f " on " key)
+         (apply f component args))
        (catch Throwable t
          (throw (ex-info (str "Error in component " key
                               " in system " (.getName (class system))
@@ -173,10 +173,10 @@
   component-keys in the system, in dependency order. Before invoking
   f, assoc's updated dependencies of the component."
   [system component-keys f & args]
-  (println "updating the system!!")
+;;  (println "updating the system!!")
   (let [graph (dependency-graph system component-keys)]
     (reduce (fn [system key]
-              (println "key" key )
+              ;;(println "key" key )
               (assoc-component system key
                      (-> (get-component system key)
                          (assoc-dependencies system)
@@ -243,6 +243,7 @@
   (when-not (even? (count keyvals))
     (throw (IllegalArgumentException.
             "system-map requires an even number of arguments")))
+;;  (println keyvals)
   (map->SystemMap (apply array-map keyvals)))
 
 (defn ex-component?

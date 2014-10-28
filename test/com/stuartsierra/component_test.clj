@@ -125,13 +125,20 @@
 
 
 
-(def s (component/start (apply component/system-map :a (component-a)
-                         :b (component/wrapped (component-b) :e)
-                         :c (component-c)
-                         :d (component/using (component-d)
-                                             {:b :b
-                                              :my-c :c})
-                         :e (component-e))))
+(def s (component/start (apply component/system-map
+                               :a (component-a)
+                               :b (component/wrapped (component-b) :e)
+                               ;;:b  (component-b)
+                               :c (component-c)
+                               :d (component/using (component-d)
+                                                   {:b :b
+                                                    :my-c :c})
+                               :e (component/using (component-e) [:f])
+                               :f (component-e)
+                               )))
+
+
+
 (get s :e)
 #_(comment (defmacro with-log [& body]
    `(binding [*log* []]

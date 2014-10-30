@@ -85,14 +85,18 @@
               (println "a is" (first more))
               (println "b is" (second more))
               (println "...function-def..." (last more)) ))
-    (SimpleWrapper. i)))
+    (merge (SimpleWrapper. i) i)))
 
 (defn assoc-component [system key c]
   (if (::wrap (meta c))
     (do
 ;      (println "has to be wrapped!!" key "by" (keys system) (::wrap (meta c)) (get system (::wrap (meta c))))
       (let [w (::wrap (meta c))]
-        (assoc  system key (assoc (intercept c (-> system meta :aop-routes)) :w (get system (::wrap (meta c)))))))
+        (assoc  system key
+                (if (= :none w)
+                  (intercept c (-> system meta :aop-routes))
+                  (assoc (intercept c (-> system meta :aop-routes)) :w (get system (::wrap (meta c))))
+                  ))))
     (assoc system key c)
     ))
 

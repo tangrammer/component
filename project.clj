@@ -1,6 +1,6 @@
 (defproject tangrammer/component "0.2.3-SNAPSHOT"
-  :description "Managed lifecycle of stateful objects"
-  :url "https://github.com/stuartsierra/component"
+  :description "Wrapping stuartsierra components"
+  :url "https://github.com/tangrammer/component"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
   :min-lein-version "2.1.3"  ; added :global-vars

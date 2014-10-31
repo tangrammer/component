@@ -58,8 +58,13 @@
   the system at which those components may be found. Alternatively, if
   the keys are the same in both the component and its enclosing
   system, they may be specified as a vector of keys."
-  [component who]
-  (using (vary-meta component assoc-in [::wrap] who) [who])
+  ([component]
+     (wrapped component nil))
+  ([component who]
+     (if who
+       (using (vary-meta component assoc-in [::wrap] who) [who])
+        (vary-meta component assoc-in [::wrap] :none) )
+     )
 
   )
 (defprotocol Listen

@@ -70,7 +70,7 @@
 (defprotocol Listen
   (listen [_]))
 
-(defn intercept[i aop-routes]
+(defn intercept[k i aop-routes]
 ;(clojure.pprint/pprint aop-routes)
   (let [methods (get-methods i)]
     (doseq [t (get-supers i)]
@@ -90,7 +90,7 @@
               (println "a is" (first more))
               (println "b is" (second more))
               (println "...function-def..." (last more)) ))
-    (merge (SimpleWrapper. i) i)))
+    (merge (assoc (SimpleWrapper. i) :k k) i)))
 
 (defn assoc-component [system key c]
   (if (::wrap (meta c))
@@ -99,8 +99,8 @@
       (let [w (::wrap (meta c))]
         (assoc  system key
                 (if (= :none w)
-                  (intercept c (-> system meta :aop-routes))
-                  (assoc (intercept c (-> system meta :aop-routes)) :w (get system (::wrap (meta c))))
+                  (intercept key c (-> system meta :aop-routes))
+                  (assoc (intercept key c (-> system meta :aop-routes)) :w (get system (::wrap (meta c))))
                   ))))
     (assoc system key c)
     ))

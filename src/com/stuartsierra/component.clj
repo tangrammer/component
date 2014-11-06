@@ -70,28 +70,28 @@
 (defprotocol Listen
   (listen [_]))
 
+(defn is-defrecord-instance [i]
+  (empty? (clojure.set/difference #{java.lang.Iterable clojure.lang.Counted clojure.lang.Seqable
+                                      clojure.lang.IKeywordLookup clojure.lang.Associative clojure.lang.IObj
+                                      clojure.lang.IMeta java.io.Serializable clojure.lang.IPersistentCollection
+                                      clojure.lang.IHashEq clojure.lang.IPersistentMap clojure.lang.IRecord
+                                      java.util.Map clojure.lang.ILookup java.lang.Object} (supers (class i))
+                                      ))
+  )
+
 (defn intercept[k i aop-routes]
 ;(clojure.pprint/pprint aop-routes)
   (let [methods (get-methods i)]
     (doseq [t (get-supers i)]
-      (println "*********** " t)
       (add-extend aop-routes SimpleWrapper  (interface->protocol t) methods))
-
-    #_(add-extend SimpleWrapper Listen methods
-
-            (fn [& more]
-              (println "a is" (first more))
-              (println "b is" (second more))
-              (println "...function-def..." (last more)) ))
-
-    #_(add-extend SimpleWrapper Lifecycle methods
-
-            (fn [& more]
-              (println "a is" (first more))
-              (println "b is" (second more))
-              (println "...function-def..." (last more)) ))
-    (println "keys:::: " (keys i))
-    (let [e (with-meta (:state i) {:who k})] (merge (assoc (SimpleWrapper. i) :k k) (assoc i :state  e)))
+    ;; add :who keyword to meta of each dep to know which is the object that call
+    (let [i-with-meta-deps (reduce (fn[c ck]
+                       (let [v (get c ck)]
+                         (if (is-defrecord-instance v)
+                           (assoc c ck (with-meta v {:who k}))
+                           c
+                           ))) i (keys i))]
+      (merge (assoc (SimpleWrapper. i) :k k) i-with-meta-deps))
     ) )
 
 (defn assoc-component [system key c]

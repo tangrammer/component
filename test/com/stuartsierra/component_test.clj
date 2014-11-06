@@ -112,7 +112,6 @@
 
   component/Lifecycle
   (start [this]
-    (println "staritng EEEE")
     (log 'ComponentE.start this)
     (assoc this ::started? true))
   (stop [this]
@@ -147,3 +146,5 @@
                                     :e (component/using (component-e) [:f])
                                     :f (component-e)
                                     ) assoc-in [:aop-routes ] routes-welcome)))
+
+(println "\nwho is invoking :state? >>" (:who (meta (-> s :b :a))))

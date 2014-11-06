@@ -90,7 +90,9 @@
               (println "a is" (first more))
               (println "b is" (second more))
               (println "...function-def..." (last more)) ))
-    (merge (assoc (SimpleWrapper. i) :k k) i)))
+    (println "keys:::: " (keys i))
+    (let [e (with-meta (:state i) {:who k})] (merge (assoc (SimpleWrapper. i) :k k) (assoc i :state  e)))
+    ) )
 
 (defn assoc-component [system key c]
   (if (::wrap (meta c))

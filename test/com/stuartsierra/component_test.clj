@@ -58,7 +58,7 @@
 
 (defn component-b []
   (component/using
-    (map->ComponentB {:state (rand-int Integer/MAX_VALUE)})
+   (map->ComponentB {:state {:value (rand-int Integer/MAX_VALUE)}})
     [:a]))
 
 (defrecord ComponentC [state a b]
@@ -138,7 +138,7 @@
 (match-route routes-welcome "com.stuartsierra.component.Lifecycle/start/this")
 (def s (component/start (vary-meta (apply component/system-map
                                     :a (component-a)
-                                    :b (component/wrapped (component-b) :e )
+                                    :b (component/wrapped (component-b) )
                                     ;;:b  (component-b)
                                     :c (component-c)
                                     :d (component/using (component-d)

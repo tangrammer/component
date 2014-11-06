@@ -1,11 +1,11 @@
-(defproject tangrammer/component "0.2.3-SNAPSHOT"
+(defproject tangrammer/component "0.2.4"
   :description "Wrapping stuartsierra components"
   :url "https://github.com/tangrammer/component"
   :license {:name "The MIT License"
             :url "http://opensource.org/licenses/MIT"}
   :min-lein-version "2.1.3"  ; added :global-vars
   :dependencies [[com.stuartsierra/dependency "0.1.1"]
-                 [tangrammer/wrapper "0.1.1-SNAPSHOT"]
+                 [tangrammer/wrapper "0.1.1"]
                  ]
   :global-vars {*warn-on-reflection* true}
   :aliases {"test-all"

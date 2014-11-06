@@ -1,4 +1,4 @@
-(defproject tangrammer/component "0.2.4"
+(defproject tangrammer/component "0.2.5"
   :description "Wrapping stuartsierra components"
   :url "https://github.com/tangrammer/component"
   :license {:name "The MIT License"

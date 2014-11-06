@@ -91,7 +91,7 @@
                            (assoc c ck (with-meta v {:who k}))
                            c
                            ))) i (keys i))]
-      (merge (assoc (SimpleWrapper. i) :k k) i-with-meta-deps))
+      (merge (assoc (SimpleWrapper. i-with-meta-deps) :k k) i-with-meta-deps))
     ) )
 
 (defn assoc-component [system key c]
